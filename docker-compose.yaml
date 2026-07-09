@@ -1,0 +1,20 @@
+services:
+  ros2:
+    # Imagen pública del curso (ROS 2 Jazzy). Origen: https://github.com/pgonfiuba/fros
+    image: ghcr.io/pgonfiuba/ros2-clases:jazzy
+    container_name: tp_ros2
+    stdin_open: true
+    tty: true
+    network_mode: host
+    ipc: host
+    environment:
+      - ROS_DOMAIN_ID=42
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/root/.Xauthority
+    devices:
+      - "/dev/dri/:/dev/dri/"
+    volumes:
+      - ${XAUTHORITY:-/dev/null}:/root/.Xauthority:ro  # X11 para RViz/RQT (TP1); /dev/null si no hay sesion grafica
+      - .:/root/ros2_ws/src                          # este repo = src del workspace
+      - ${HOME}/tp_ros2_bags:/root/tp_ros2_bags:ro   # rosbag del TP1 (ver tp1/README.md)
+    command: bash

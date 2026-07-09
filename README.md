@@ -1,49 +1,58 @@
-# bohorquez_hernandez_pkg
+# TP de ROS 2: Fundamentos de Robótica (FIUBA)
 
-![Nube de puntos del LiDAR del Go1 en RViz](img/rviz_running.png)
+Entregas del curso, en ROS 2 Jazzy.
 
-TP de ROS 2 (Jazzy): reproduce un rosbag y lo muestra en RViz y RQT con un solo launch.
+- **[tp1/](tp1/)**: reproduce un rosbag (robot corriendo) en RViz y RQT con un solo launch.
+- **[tp2/](tp2/)**: servicios y parámetros (contador) + action (republicador).
 
-## El rosbag
+## Cómo correr
 
-Uso la secuencia `running` del dataset [Leg-KILO](https://github.com/ouguangjun/legkilo-dataset): quería un rosbag de un robot en movimiento, de cuatro patas y parecido a Spot de Boston Dynamics.
+El entorno es la imagen del curso (ROS 2 Jazzy). El `docker-compose.yaml` la levanta y monta
+este repo como workspace. Origen de la imagen: https://github.com/pgonfiuba/fros
 
-### Descarga y conversión
-
-Está en ROS 1, estos son los pasos para convertirlo 
+Lo más rápido es con `make` (hace falta `docker`, `docker compose` y `make`):
 
 ```bash
-# Bajar running.bag de la carpeta del dataset:
-# https://drive.google.com/drive/folders/1Egpj7FngTTPCeQDEzlbiK3iesPPZtqiM
-
-# para instalar rosbags local
-sudo apt install -y pipx
-pipx ensurepath
-pipx install rosbags
-
-# para hacer la conversion
-mkdir -p ~/tp_ros2_bags
-rosbags-convert --src running.bag --dst ~/tp_ros2_bags/running \
-  --dst-storage mcap --dst-typestore ros2_jazzy \
-  --exclude-topic /high_state
+make rebuild   # la primera vez: crea el contenedor y compila
+make shell     # entra al contenedor (ROS y el workspace ya sourceados)
+make down      # lo baja al terminar
 ```
 
-Esta excluido /high_state porque no era compatible con ROS2.
-## Build
-
-Una sola vez, para compilar el paquete:
+Ya adentro corrés el ejercicio que quieras:
 
 ```bash
-colcon build --packages-select bohorquez_hernandez_pkg --symlink-install
+ros2 launch bohorquez_hernandez_tp2_pkg contador.launch.py
+ros2 launch bohorquez_hernandez_tp2_pkg republicador.launch.py
+```
+
+O todo a mano:
+
+```bash
+# levantar el contenedor
+sudo HOME="$HOME" XAUTHORITY="$XAUTHORITY" DISPLAY="$DISPLAY" docker compose up -d
+sudo docker exec -it tp_ros2 bash
+
+# dentro del contenedor:
+source /opt/ros/jazzy/setup.bash
+cd /root/ros2_ws
+colcon build
 source install/setup.bash
 ```
 
-## Correr todo
-
-Con un solo launch se abre todo:
+Con el workspace compilado:
 
 ```bash
+# TP1 (rosbag + RViz + RQT) -- ver tp1/README.md para bajar el rosbag
 ros2 launch bohorquez_hernandez_pkg bag_demo.launch.py
+# TP2 - ejercicio 1 (contador + servicio)
+ros2 launch bohorquez_hernandez_tp2_pkg contador.launch.py
+# TP2 - ejercicio 2 (republicador con action)
+ros2 launch bohorquez_hernandez_tp2_pkg republicador.launch.py
 ```
 
-Esto levanta junto el rosbag, RViz y RQT.
+Para bajar el contenedor:
+
+```bash
+sudo HOME="$HOME" XAUTHORITY="$XAUTHORITY" DISPLAY="$DISPLAY" docker compose down
+```
+
