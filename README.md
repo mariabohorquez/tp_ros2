@@ -4,6 +4,7 @@ Entregas del curso, en ROS 2 Jazzy.
 
 - **[tp1/](tp1/)**: reproduce un rosbag (robot corriendo) en RViz y RQT con un solo launch.
 - **[tp2/](tp2/)**: servicios y parámetros (contador) + action (republicador).
+- **[tp3/](tp3/)**: consulta la TF `base_link -> tool0` del doble péndulo e imprime la matriz SE(3).
 
 ## Cómo correr
 
